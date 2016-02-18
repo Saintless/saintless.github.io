@@ -1,17 +1,17 @@
 {
  "name": "Gial Ackbar",
  "title": "Grand Admiral",
- "picture": "/AdmiralAckbar.png",
+ "picture": "photos/AdmiralAckbar.png",
  "children": [
   {
    "name": "Boba Fett",
    "title": "Bounty Hunter",
-   "picture": "/BobaFett.png",
+   "picture": "photos/BobaFett.png",
    "children": [
     {
      "name": "Anakin Skywalker",
      "title": "Darth Vader",
-     "picture": "/Vader.png",
+     "picture": "photos/Vader.png",
      "children": [
       {"name": "AgglomerativeCluster", "size": 3938},
       {"name": "CommunityStructure", "size": 3812},
@@ -42,7 +42,7 @@
   {
    "name": "Chewbacca",
    "title": "Smuggler",
-   "picture": "/Chewbacca.png",
+   "picture": "photos/Chewbacca.png",
    "children": [
     {"name": "Easing", "size": 17010},
     {"name": "FunctionSequence", "size": 5842},
