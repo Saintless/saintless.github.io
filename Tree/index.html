@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="/Tree/script/d3.js"></script>
+<script src="/script/d3.js"></script>
 </head>
 <meta charset="utf-8">
 <style>
@@ -11,7 +11,7 @@
 }
 
 .node circle {
-  stroke: steelblue;
+  stroke: url(#linear);
   stroke-width: 1.5px;
 }
 
@@ -21,10 +21,18 @@
 
 .link {
   fill: none;
-  stroke: #ccc;
+  stroke: url(#linear);
   stroke-width: 1.5px;
 }
 
+.data-name {
+  font-weight: bold;
+}
+
+.data-title {
+  stroke: grey;
+  font-style: italic;
+}
 </style>
 <body>
 <script>
@@ -36,23 +44,106 @@ var margin = {top: 20, right: 120, bottom: 20, left: 120},
 var i = 0,
     duration = 750,
     root,
-	imgDiameter = 50,
-	imgRadius = imgDiameter/2;
+    imgDiameter = 50,
+    imgRadius = imgDiameter/2;
 
 var tree = d3.layout.tree()
     .size([height, width]);
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
-	
+    
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	
+    
 var defs = d3.select("svg").append("defs");
 
-d3.json("/Tree/script/flare.json", function(error, flare) {
+var gradient = defs.append("linearGradient")
+    .attr("id", "linear")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "0%")
+    .attr("spreadMethod", "pad");
+    
+    gradient.append("stop")
+    .attr("offset", "0")
+    .attr("stop-color", "darkViolet")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "0.143")
+    .attr("stop-color", "blue")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "0.286")
+    .attr("stop-color", "cyan")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "0.429")
+    .attr("stop-color", "limeGreen")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "0.572")
+    .attr("stop-color", "yellow")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "0.715")
+    .attr("stop-color", "orange")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "0.857")
+    .attr("stop-color", "red")
+    .attr("stop-opacity", 1);
+    
+    gradient.append("stop")
+    .attr("offset", "1")
+    .attr("stop-color", "maroon")
+    .attr("stop-opacity", 1);
+    
+    defs.append("linearGradient")
+    .attr("id", "linear45")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(45)");
+    
+    defs.append("linearGradient")
+    .attr("id", "linear90")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(90)");
+    
+    defs.append("linearGradient")
+    .attr("id", "linear135")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(135)");
+    
+    defs.append("linearGradient")
+    .attr("id", "linear180")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(180)");
+    
+    defs.append("linearGradient")
+    .attr("id", "linear225")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(225)");
+    
+    defs.append("linearGradient")
+    .attr("id", "linear270")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(270)");
+    
+    defs.append("linearGradient")
+    .attr("id", "linear315")
+    .attr("xlink:href", "#rainbow")
+    .attr("gradientTransform", "rotate(315)");
+
+d3.json("/script/flare.json", function(error, flare) {
   if (error) throw error;
 
   root = flare;
@@ -82,19 +173,19 @@ function update(source) {
   // Normalize for fixed-depth.
   nodes.forEach(function(d) {
       d.y = d.depth * 220;
-	  //console.log(d.depth);
+      //console.log(d.depth);
       defs.append("pattern")
-	    .attr("patternUnits", "userSpaceOnUse")
-	    .attr("id", "pattern" + (d.title || "NoTitle").replace(/\s+/g, ""))
-	    .attr("width", imgDiameter)
-	    .attr("height", imgDiameter)
-	    .append("image")
-	    .attr("xlink:href", "/Tree/image" + d.picture)
-	    .attr("id", (d.title || "NoTitle").replace(/\s+/g, ""))
-	    .attr("width", imgDiameter)
-	    .attr("height", imgDiameter)
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("id", "pattern" + (d.title || "NoTitle").replace(/\s+/g, ""))
+        .attr("width", imgDiameter)
+        .attr("height", imgDiameter)
+        .append("image")
+        .attr("xlink:href", "/Tree/image/" + d.picture || "AdmiralAckbar.png")
+        .attr("id", "image" + (d.title || "NoTitle").replace(/\s+/g, ""))
+        .attr("width", imgDiameter)
+        .attr("height", imgDiameter)
         .attr("y", 0)
-	    .attr("x", 0);
+        .attr("x", 0);
   });
   
   // Update the nodes…
@@ -104,35 +195,39 @@ function update(source) {
   // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append("g")
       .attr("class", "node")
-	  .attr("id", function(d) { return "gNode" + (d.title || "NoTitle").replace(/\s+/g, "") })
+      .attr("id", function(d) { return "gNode" + (d.title || "NoTitle").replace(/\s+/g, "") })
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + (source.x0 - imgRadius) + ")"; })
       .on("click", click);
 
   var nodeCircle = nodeEnter.append("circle")
       .attr("r", imgRadius)
-	  .attr("cx", imgRadius)
-	  .attr("cy", imgRadius)
-	  .attr("id", function(d) { return "circle" + (d.title || "NoTitle").replace(/\s+/g, "") })
-	  .attr("fill", function(d) { return "url(#" + "pattern" + (d.title || "VendorDirector").replace(/\s+/g, "") + ")" });
+      .attr("cx", imgRadius)
+      .attr("cy", imgRadius)
+      .attr("id", function(d) { return "circle" + (d.title || "NoTitle").replace(/\s+/g, "") })
+      .attr("fill", function(d) { return "url(#" + "pattern" + (d.title || "VendorDirector").replace(/\s+/g, "") + ")" });
 
   var nodeText = nodeEnter.append("text")
       .attr("dy", ".35em")
-	  .attr("y", imgDiameter)
-	  .attr("id", function(d) { return "text" + (d.title || "NoTitle").replace(/\s+/g, "") })
-	  .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; });
+      .attr("y", imgDiameter)
+      .attr("id", function(d) { return "text" + (d.title || "NoTitle").replace(/\s+/g, "") })
+      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; });
       //.attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-	  
+      
   nodeText.append("tspan")
-		.text(function(d) { return d.name; })
-		.attr("x", imgDiameter)
-	    .attr("id", function(d) { return "tSpanName" + (d.title || "NoTitle").replace(/\s+/g, "") })
-		.attr("dy", "1.2em");
-		
+        .text(function(d) { return d.name; })
+        .attr("y", 10)
+        .attr("x", -8)
+        .attr("id", function(d) { return "tSpanName" + (d.title || "NoTitle").replace(/\s+/g, "") })
+        .attr("dy", "1.2em")
+        .attr("class", "data-name");
+        
   nodeText.append("tspan")
-		.text(function(d) { return d.title; })
-	    .attr("id", function(d) { return "tSpanTitle" + (d.title || "NoTitle").replace(/\s+/g, "") })
-		.attr("x", imgDiameter)
-		.attr("dy", "1.2em");
+        .text(function(d) { return d.title; })
+        .attr("id", function(d) { return "tSpanTitle" + (d.title || "NoTitle").replace(/\s+/g, "") })
+        .attr("y", 23)
+        .attr("x", -9)
+        .attr("dy", "1.2em")
+        .attr("class", "data-title");
 
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()
@@ -141,6 +236,7 @@ function update(source) {
 
   nodeUpdate.select("circle")
       .attr("r",  function(d) { return imgRadius; });
+      //.attr("style", "fill: url(#linear);");
 
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
