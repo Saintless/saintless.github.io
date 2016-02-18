@@ -180,7 +180,7 @@ function update(source) {
         .attr("width", imgDiameter)
         .attr("height", imgDiameter)
         .append("image")
-        .attr("xlink:href", "/Tree/image/" + d.picture || "AdmiralAckbar.png")
+        .attr("xlink:href", "/Tree/image" + d.picture || "/AdmiralAckbar.png")
         .attr("id", "image" + (d.title || "NoTitle").replace(/\s+/g, ""))
         .attr("width", imgDiameter)
         .attr("height", imgDiameter)
